@@ -101,6 +101,8 @@ Supported countries include:
 
 <img width="1485" height="890" alt="Screenshot 2025-07-30 at 14 25 34" src="https://github.com/user-attachments/assets/5f08963a-fce3-4005-9f77-d75e5fb5a67e" />
 
+<img width="1504" height="877" alt="Screenshot 2025-07-30 at 14 28 48" src="https://github.com/user-attachments/assets/f2112061-c459-4302-b2b2-c869945f255d" />
+
 
 ---
 
