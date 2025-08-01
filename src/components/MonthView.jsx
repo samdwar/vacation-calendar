@@ -66,7 +66,7 @@ export default function MonthView({ weeks, year, holidayMap, countryCode }) {
                         key={i}
                         day={day}
                         targetMonth={monthIndex}
-                        isHoliday={holidays[0]}
+                        isHoliday={holidays}
                       />
                     );
                   })}
