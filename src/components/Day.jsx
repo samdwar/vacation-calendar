@@ -12,9 +12,11 @@ export function getWikiLink(nameOrObject, countryCode = "") {
     return "https://en.wikipedia.org";
   }
 
+  // Handle names with slashes like "Maha Shivaratri/Shivaratri"
   const trimmedName = name.split("/")[0].trim();
   const key = `${trimmedName}:${(countryCode || "").toLowerCase()}`;
 
+  // Predefined overrides for disambiguated or country-specific articles
   const holidayWikiOverrides = {
     "Independence Day:in": "Independence_Day_(India)",
     "Independence Day:us": "Independence_Day_(United_States)",
@@ -30,10 +32,16 @@ export function getWikiLink(nameOrObject, countryCode = "") {
   };
 
   const override = holidayWikiOverrides[key];
-  const fallback = encodeURIComponent(trimmedName.replace(/\s+/g, "_"));
 
-  return `https://en.wikipedia.org/wiki/${override ?? fallback}`;
+  // If override exists, link directly to the page
+  if (override) {
+    return `https://en.wikipedia.org/wiki/${override}`;
+  }
+
+  // Otherwise, return search URL (more resilient than broken wiki page)
+  return `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(trimmedName)}`;
 }
+
 
 
 
