@@ -1,4 +1,32 @@
 // src/components/utils.js
+// utils.js
+
+const countryTimeZones = {
+  IN: "Asia/Kolkata",
+  US: "America/New_York", 
+  GB: "Europe/London",
+  FR: "Europe/Paris",
+};
+
+export function toLocalDateString(date, countryCode) {
+  const timeZone = countryTimeZones[countryCode] || "UTC";
+
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  // Format to "YYYY-MM-DD"
+  const parts = formatter.formatToParts(date).reduce((acc, part) => {
+    if (part.type !== "literal") acc[part.type] = part.value;
+    return acc;
+  }, {});
+
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
 
 export function getWeeksInYear(year) {
   const weeks = [];

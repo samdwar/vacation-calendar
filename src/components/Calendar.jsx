@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchHolidays } from "../api/holidays";
-import { getWeeksInYear, annotateWeeksWithHolidays } from "./utils";
+import { getWeeksInYear, toLocalDateString } from "./utils";
 import MonthView from "./MonthView";
 import QuarterView from "./QuarterView";
-
-
-function toLocalISODateString(date) {
-  return date.toLocaleDateString('en-CA'); // 'YYYY-MM-DD'
-}
 
 export default function Calendar({ year, countryCode, viewMode }) {
   const [weeks, setWeeks] = useState([]);
@@ -18,13 +13,16 @@ export default function Calendar({ year, countryCode, viewMode }) {
     const load = async () => {
       setLoading(true);
       try {
-        const holidayDates = await fetchHolidays(year, countryCode); // ["YYYY-MM-DD", ...]
-        const holidaySet = new Set(holidayDates);
-        const holidayMap = new Map(holidayDates.map(date => [date, true]));
-        const rawWeeks = getWeeksInYear(year);
-        const annotatedWeeks = annotateWeeksWithHolidays(rawWeeks, holidaySet);
+        const holidayDates = await fetchHolidays(year, countryCode); // [{ date, name }]
+        const holidayMap = new Map();
 
-        setWeeks(annotatedWeeks);
+        for (const { date, name } of holidayDates) {
+          if (!holidayMap.has(date)) holidayMap.set(date, []);
+          holidayMap.get(date).push({ name });
+        }
+
+        const rawWeeks = getWeeksInYear(year); // No need for annotateWeeksWithHolidays
+        setWeeks(rawWeeks);
         setHolidayMap(holidayMap);
       } catch (err) {
         console.error("Calendar fetch error:", err);
@@ -41,6 +39,6 @@ export default function Calendar({ year, countryCode, viewMode }) {
   if (!weeks.length) return <p className="text-center text-gray-500">No calendar data</p>;
 
   return viewMode === "monthly"
-    ? <MonthView weeks={weeks} year={year} holidayMap={holidayMap} />
-    : <QuarterView weeks={weeks} year={year} holidayMap={holidayMap} />;
+    ? <MonthView weeks={weeks} year={year} holidayMap={holidayMap} countryCode={countryCode} />
+    : <QuarterView weeks={weeks} year={year} holidayMap={holidayMap} countryCode={countryCode} />;
 }

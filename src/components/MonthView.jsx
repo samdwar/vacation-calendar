@@ -1,15 +1,12 @@
 import Day from "./Day";
+import { toLocalDateString } from "./utils";
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
-function toUTCDateString(date) {
-  return date.toISOString().split("T")[0]; // Always returns YYYY-MM-DD in UTC
-}
-
-export default function MonthView({ weeks, year, holidayMap }) {
+export default function MonthView({ weeks, year, holidayMap, countryCode }) {
   const months = Array.from({ length: 12 }, (_, i) => i);
 
   return (
@@ -30,13 +27,13 @@ export default function MonthView({ weeks, year, holidayMap }) {
         for (let i = 0; i < 6; i++) {
           const week = days.slice(i * 7, (i + 1) * 7);
           const holidayCount = week.reduce((count, day) => {
-            const iso = toUTCDateString(day);
-            return holidayMap.has(iso) ? count + 1 : count;
+            const iso = toLocalDateString(day, countryCode);
+            return holidayMap.has(iso) ? count + holidayMap.get(iso).length : count;
           }, 0);
 
           const colorClass =
             holidayCount === 1 ? "light" :
-            holidayCount > 1 ? "dark" : "none";
+              holidayCount > 1 ? "dark" : "none";
 
           monthWeeks.push({ week, colorClass });
         }
@@ -61,14 +58,18 @@ export default function MonthView({ weeks, year, holidayMap }) {
 
               return (
                 <div key={idx} className={weekClass}>
-                  {week.map((day, i) => (
-                    <Day
-                      key={i}
-                      day={day}
-                      targetMonth={monthIndex}
-                      isHoliday={holidayMap.has(toUTCDateString(day))}
-                    />
-                  ))}
+                  {week.map((day, i) => {
+                    const dateStr = toLocalDateString(day, countryCode);
+                    const holidays = holidayMap.get(dateStr) || [];
+                    return (
+                      <Day
+                        key={i}
+                        day={day}
+                        targetMonth={monthIndex}
+                        isHoliday={holidays[0]}
+                      />
+                    );
+                  })}
                 </div>
               );
             })}

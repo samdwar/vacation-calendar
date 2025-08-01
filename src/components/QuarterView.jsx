@@ -1,4 +1,5 @@
 import Day from "./Day";
+import { toLocalDateString } from "./utils";
 
 const quarterMonths = [
   ["January", "February", "March"],
@@ -7,11 +8,7 @@ const quarterMonths = [
   ["October", "November", "December"],
 ];
 
-function toUTCDateString(date) {
-  return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD
-}
-
-export default function QuarterView({ weeks, year, holidayMap }) {
+export default function QuarterView({ weeks, year, holidayMap, countryCode }) {
   return (
     <div className="space-y-8">
       {quarterMonths.map((quarter, qIdx) => (
@@ -37,8 +34,8 @@ export default function QuarterView({ weeks, year, holidayMap }) {
               for (let i = 0; i < 6; i++) {
                 const week = days.slice(i * 7, (i + 1) * 7);
                 const holidayCount = week.reduce((count, day) => {
-                  const iso = toUTCDateString(day);
-                  return holidayMap.has(iso) ? count + 1 : count;
+                  const iso = toLocalDateString(day, countryCode);
+                  return holidayMap.has(iso) ? count + holidayMap.get(iso).length : count;
                 }, 0);
 
                 const colorClass =
@@ -71,14 +68,18 @@ export default function QuarterView({ weeks, year, holidayMap }) {
 
                     return (
                       <div key={idx} className={weekClass}>
-                        {week.map((day, i) => (
-                          <Day
-                            key={i}
-                            day={day}
-                            targetMonth={monthIndex}
-                            isHoliday={holidayMap.has(toUTCDateString(day))}
-                          />
-                        ))}
+                        {week.map((day, i) => {
+                          const dateStr = toLocalDateString(day, countryCode);
+                          const holidays = holidayMap.get(dateStr) || [];
+                          return (
+                            <Day
+                              key={i}
+                              day={day}
+                              targetMonth={monthIndex}
+                              isHoliday={holidays[0]}
+                            />
+                          );
+                        })}
                       </div>
                     );
                   })}

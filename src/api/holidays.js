@@ -442,7 +442,10 @@ export async function fetchHolidays(year, countryCode) {
     }
 
     // Extract just date.iso strings
-    return holidays.map(item => item.date.iso); // ["2025-01-26", ...]
+    return holidays.map(item => ({
+      date: item.date.iso,
+      name: item.name
+    }));
   } catch (err) {
     console.error("❌ Error in fetchHolidays:", err);
     return [];
