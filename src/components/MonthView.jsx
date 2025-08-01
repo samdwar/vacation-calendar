@@ -12,14 +12,18 @@ export default function MonthView({ weeks, year, holidayMap, countryCode }) {
   return (
     <div className="flex flex-wrap gap-4 justify-center">
       {months.map((monthIndex) => {
-        const firstOfMonth = new Date(year, monthIndex, 1);
+        // const firstOfMonth = new Date(year, monthIndex, 1);
+        const firstOfMonth = new Date(Date.UTC(year, monthIndex, 1));
+
         const firstDayToShow = new Date(firstOfMonth);
-        firstDayToShow.setDate(firstOfMonth.getDate() - firstOfMonth.getDay());
+        firstDayToShow.setUTCDate(firstOfMonth.getUTCDate() - firstOfMonth.getUTCDay());
+
 
         const days = [];
         for (let i = 0; i < 42; i++) {
-          const d = new Date(firstDayToShow);
-          d.setDate(firstDayToShow.getDate() + i);
+          const base = new Date(firstDayToShow);
+          base.setUTCDate(firstDayToShow.getUTCDate() + i);
+          const d = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate()));
           days.push(d);
         }
 
@@ -67,6 +71,7 @@ export default function MonthView({ weeks, year, holidayMap, countryCode }) {
                         day={day}
                         targetMonth={monthIndex}
                         isHoliday={holidays}
+                        countryCode={countryCode}
                       />
                     );
                   })}

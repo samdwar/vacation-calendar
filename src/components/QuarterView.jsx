@@ -25,8 +25,9 @@ export default function QuarterView({ weeks, year, holidayMap, countryCode }) {
 
               const days = [];
               for (let i = 0; i < 42; i++) {
-                const d = new Date(firstDayToShow);
-                d.setDate(firstDayToShow.getDate() + i);
+                const base = new Date(firstDayToShow);
+                base.setUTCDate(firstDayToShow.getUTCDate() + i);
+                const d = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate()));
                 days.push(d);
               }
 
@@ -40,7 +41,7 @@ export default function QuarterView({ weeks, year, holidayMap, countryCode }) {
 
                 const colorClass =
                   holidayCount === 1 ? "light" :
-                  holidayCount > 1 ? "dark" : "none";
+                    holidayCount > 1 ? "dark" : "none";
 
                 monthWeeks.push({ week, colorClass });
               }
@@ -76,7 +77,8 @@ export default function QuarterView({ weeks, year, holidayMap, countryCode }) {
                               key={i}
                               day={day}
                               targetMonth={monthIndex}
-                              isHoliday={holidays[0]}
+                              isHoliday={holidays}
+                              countryCode={countryCode}
                             />
                           );
                         })}

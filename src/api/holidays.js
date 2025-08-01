@@ -435,6 +435,7 @@ export async function fetchHolidays(year, countryCode) {
     //     ]
     //   }
     // };
+    // //
     const holidays = json?.response?.holidays;
     if (!Array.isArray(holidays)) {
       console.error("❌ holidays is not an array:", holidays);

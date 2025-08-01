@@ -1,31 +1,55 @@
 // src/components/utils.js
 // utils.js
 
+import { DateTime } from "luxon";
+
+export function toLocalDateString(date, countryCode) {
+  const timeZoneMap = {
+    in: "Asia/Kolkata",
+    us: "America/New_York",
+    ca: "America/Toronto",
+    gb: "Europe/London",
+    fr: "Europe/Paris",
+    // Add more as needed
+  };
+
+  const zone = timeZoneMap[countryCode?.toLowerCase()] || "UTC";
+
+  // Convert JS date to ISO string, extract date only (yyyy-mm-dd)
+  const dateString = date.toISOString().split("T")[0];
+
+  // Create Luxon DateTime from string + zone to avoid time shifting
+  const dt = DateTime.fromISO(dateString, { zone });
+
+  return dt.toISODate(); // Always returns YYYY-MM-DD in that country's zone
+
+}
+
 const countryTimeZones = {
   IN: "Asia/Kolkata",
-  US: "America/New_York", 
+  US: "America/New_York",
   GB: "Europe/London",
   FR: "Europe/Paris",
 };
 
-export function toLocalDateString(date, countryCode) {
-  const timeZone = countryTimeZones[countryCode] || "UTC";
+// export function toLocalDateString(date, countryCode) {
+//   const timeZone = countryTimeZones[countryCode] || "UTC";
 
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+//   const formatter = new Intl.DateTimeFormat("en-CA", {
+//     timeZone,
+//     year: "numeric",
+//     month: "2-digit",
+//     day: "2-digit",
+//   });
 
-  // Format to "YYYY-MM-DD"
-  const parts = formatter.formatToParts(date).reduce((acc, part) => {
-    if (part.type !== "literal") acc[part.type] = part.value;
-    return acc;
-  }, {});
+//   // Format to "YYYY-MM-DD"
+//   const parts = formatter.formatToParts(date).reduce((acc, part) => {
+//     if (part.type !== "literal") acc[part.type] = part.value;
+//     return acc;
+//   }, {});
 
-  return `${parts.year}-${parts.month}-${parts.day}`;
-}
+//   return `${parts.year}-${parts.month}-${parts.day}`;
+// }
 
 
 export function getWeeksInYear(year) {
